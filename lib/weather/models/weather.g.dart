@@ -6,8 +6,15 @@ part of 'weather.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-Temperature _$TemperatureFromJson(Map<String, dynamic> json) => Temperature(
-      value: (json['value'] as num).toDouble(),
+Temperature _$TemperatureFromJson(Map<String, dynamic> json) => $checkedCreate(
+      'Temperature',
+      json,
+      ($checkedConvert) {
+        final val = Temperature(
+          value: $checkedConvert('value', (v) => (v as num).toDouble()),
+        );
+        return val;
+      },
     );
 
 Map<String, dynamic> _$TemperatureToJson(Temperature instance) =>
@@ -15,19 +22,29 @@ Map<String, dynamic> _$TemperatureToJson(Temperature instance) =>
       'value': instance.value,
     };
 
-Weather _$WeatherFromJson(Map<String, dynamic> json) => Weather(
-      temperature:
-          Temperature.fromJson(json['temperature'] as Map<String, dynamic>),
-      condition: $enumDecode(_$WeatherConditionEnumMap, json['condition']),
-      location: json['location'] as String,
-      lastUpdated: DateTime.parse(json['lastUpdated'] as String),
+Weather _$WeatherFromJson(Map<String, dynamic> json) => $checkedCreate(
+      'Weather',
+      json,
+      ($checkedConvert) {
+        final val = Weather(
+          temperature: $checkedConvert('temperature',
+              (v) => Temperature.fromJson(v as Map<String, dynamic>)),
+          condition: $checkedConvert(
+              'condition', (v) => $enumDecode(_$WeatherConditionEnumMap, v)),
+          location: $checkedConvert('location', (v) => v as String),
+          lastUpdated: $checkedConvert(
+              'last_updated', (v) => DateTime.parse(v as String)),
+        );
+        return val;
+      },
+      fieldKeyMap: const {'lastUpdated': 'last_updated'},
     );
 
 Map<String, dynamic> _$WeatherToJson(Weather instance) => <String, dynamic>{
       'condition': _$WeatherConditionEnumMap[instance.condition]!,
-      'lastUpdated': instance.lastUpdated.toIso8601String(),
+      'last_updated': instance.lastUpdated.toIso8601String(),
       'location': instance.location,
-      'temperature': instance.temperature,
+      'temperature': instance.temperature.toJson(),
     };
 
 const _$WeatherConditionEnumMap = {

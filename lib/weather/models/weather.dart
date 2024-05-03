@@ -13,7 +13,7 @@ extension TemperatureUnitsX on TemperatureUnits {
   bool get isCelsius => this == TemperatureUnits.celsius;
 }
 
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class Temperature extends Equatable {
   final double value;
   const Temperature({required this.value});
@@ -27,7 +27,7 @@ class Temperature extends Equatable {
   List<Object?> get props => throw UnimplementedError();
 }
 
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class Weather extends Equatable {
   final WeatherCondition condition;
   final DateTime lastUpdated;
