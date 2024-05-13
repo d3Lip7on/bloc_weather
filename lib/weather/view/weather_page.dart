@@ -1,9 +1,13 @@
 import 'package:bloc_wheather/theme/cubit/theme_cubit.dart';
 import 'package:bloc_wheather/weather/cubit/weather_cubit.dart';
 import 'package:bloc_wheather/weather/cubit/weather_state.dart';
+import 'package:bloc_wheather/weather/view/search_page.dart';
+import 'package:bloc_wheather/weather/view/setting_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:weather_repository/weather_repository.dart';
+
+import '../widgets/weather_empty.dart';
 
 class WeatherPage extends StatelessWidget {
   const WeatherPage({super.key});
