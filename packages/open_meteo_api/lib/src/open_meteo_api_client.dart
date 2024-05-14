@@ -1,7 +1,8 @@
 import 'dart:convert';
 
-import 'package:http/http.dart' as http;
+// import 'package:http/http.dart' as http;
 import '../open_meteo_api.dart';
+import 'package:dio/dio.dart';
 
 /// Exception thrown when locationSearch fails.
 class LocationRequestFailure implements Exception {}
@@ -16,29 +17,25 @@ class WeatherRequestFailure implements Exception {}
 class WeatherNotFoundFailure implements Exception {}
 
 class OpenMeteoApiClient {
-  final http.Client _httpClient;
-  final _baseUrlGeocoding = 'geocoding-api.open-meteo.com';
-  final _baseUrlOpenMeteo = 'api.open-meteo.com';
+  final Dio _dio;
 
-  OpenMeteoApiClient({http.Client? httpClient})
-      : _httpClient = httpClient ?? http.Client();
+  final _geocodingPath = 'https://geocoding-api.open-meteo.com/v1/search';
+  final _openMeteoPath = 'https://api.open-meteo.com/v1/forecast';
+
+  OpenMeteoApiClient({Dio? dio}) : _dio = dio ?? Dio();
 
   /// Finds a [Location] `/v1/search/?name=(query)`.
   Future<Location> locationSearch({required query}) async {
-    final locationUri =
-        Uri.https(_baseUrlGeocoding, '/v1/search', <String, dynamic>{
+    final locationResponse =
+        await _dio.get(_geocodingPath, queryParameters: <String, dynamic>{
       "name": query,
       "count": '1',
     });
 
-    final locationResponse = await _httpClient.get(locationUri);
-
     if (locationResponse.statusCode != 200) {
       throw LocationRequestFailure();
     }
-
-    final locationJson =
-        jsonDecode(locationResponse.body) as Map<String, dynamic>;
+    final locationJson = locationResponse.data as Map<String, dynamic>;
 
     if (!locationJson.containsKey('results')) {
       throw LocationNotFoundFailure();
@@ -55,19 +52,18 @@ class OpenMeteoApiClient {
   // https://api.open-meteo.com/v1/forecast?latitude=$latitude&longitude=$longitude&current_weather=true
   Future<Weather> getWeather(
       {required double latitude, required double longitude}) async {
-    final weatherUri =
-        Uri.https(_baseUrlOpenMeteo, '/v1/forecast', <String, dynamic>{
+    final weatherResponse =
+        await _dio.get(_openMeteoPath, queryParameters: <String, dynamic>{
       'latitude': '$latitude',
       'longitude': '$longitude',
       'current_weather': 'true',
     });
-    final weatherResponse = await _httpClient.get(weatherUri);
 
     if (weatherResponse.statusCode != 200) {
       throw WeatherRequestFailure();
     }
 
-    final bodyJson = jsonDecode(weatherResponse.body) as Map<String, dynamic>;
+    final bodyJson = weatherResponse.data as Map<String, dynamic>;
 
     if (!bodyJson.containsKey('current_weather')) {
       throw WeatherNotFoundFailure();
