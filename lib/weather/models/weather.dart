@@ -24,7 +24,7 @@ class Temperature extends Equatable {
 
   @override
   // TODO: implement props
-  List<Object?> get props => throw UnimplementedError();
+  List<Object?> get props => [value];
 }
 
 @JsonSerializable(explicitToJson: true)
@@ -73,5 +73,5 @@ class Weather extends Equatable {
 
   @override
   // TODO: implement props
-  List<Object?> get props => throw UnimplementedError();
+  List<Object?> get props => [temperature, condition, location, lastUpdated];
 }
